@@ -26,31 +26,54 @@ class NoticiaController extends ControllerBase
 
     }
 
-    public function editarAction($id)
+    public function editarAction($id = null)
     {   
 
-        $this->view->form = new EditarForm();
+        
         // Check  id not empty
         if (!empty($id) AND $id != null)
         {
-            
 
-        // Fetch User Article
-        $noticia = Noticia::findFirst([
-            'conditions' => 'id = :1:',
-            'bind' => [
-                '1' => $id
-            ]
-        ]);
-        
-        if (!$noticia) {
-            $this->flashSession->error('Notícia não encontrada');
-            return $this->response->redirect('noticias');
-        }
+            if ($this->request->isPost()) {
+                
+                $noticia = Noticia::findFirst([
+                    'conditions' => 'id = :1:',
+                    'bind' => [
+                        '1' => $id
+                    ]
+                ]);
 
-        // Send Article Data in Article Form
-        $this->view->noticia = $noticia;
+                $form = new EditarForm();
+                $form->bind($_POST, $noticia);
 
+                $this->view->noticia = $noticia;
+                $this->view->form = new EditarForm($noticia, [
+                    "edit" => true
+                ]);
+
+            } else {
+                // Fetch User Article
+                $noticia = Noticia::findFirst([
+                    'conditions' => 'id = :1:',
+                    'bind' => [
+                        '1' => $id
+                    ]
+                ]);
+
+                
+                if (!$noticia) {
+                    $this->flashSession->error('Notícia não encontrada');
+                    return $this->response->redirect('noticias');
+                }
+
+                // Send Noticia Data in Noticia Form
+                $this->view->noticia = $noticia;
+                // $this->view->form = new EditarForm();;
+
+                $this->view->form = new EditarForm($noticia, [
+                    "edit" => true
+                ]);
+            }
         } else {
             return $this->response->redirect('noticias');
         }
@@ -108,54 +131,52 @@ class NoticiaController extends ControllerBase
 
     public function atualizarAction()
     {
-        $form = new EditarForm();
-        $this->noticia = new Noticia();
-
+    
         // check request
         if (!$this->request->isPost()) {
-            return $this->response->redirect('noticias/editar');
+            return $this->response->redirect('noticias');
         }
+
+        $id = $this->request->getPost("id", "int");
 
         $noticia = Noticia::findFirst([
             'conditions' => 'id = :1:',
             'bind' => [
-                '1' => 38
+                '1' => $id
             ]
         ]);
-        
-        $form->bind($_POST, $noticia);
 
-        // echo "<pre>";
-        // print_r($noticia);
-        // exit;
-        
-        
-        // check form validation
-        if (!$form->isValid()) {
+        if (!$noticia) {
+            $this->flashSession->error('Noticia não encontrada!');
+            return $this->response->redirect('noticias');
+        }
+      
+        $form = new EditarForm();
+        if (!$form->isValid($this->request->getPost(), $noticia)) {
             foreach ($form->getMessages() as $message) {
                 $this->flashSession->error($message);
-                $this->dispatcher->forward([
+                return $this->dispatcher->forward([
                     'controller' => $this->router->getControllerName(),
-                    'action'     => 'noticias',
+                    'action'     => 'editar',
+                    'params'     => [$id],
                 ]);
-                return;
             }
         }
         
+      
         $DateAndTime = date('Y-m-d h:i:s a', time());
-        
-        $this->noticia->setDataUltimaAtualizacao($DateAndTime);
-       
+    
+        $noticia->setDataUltimaAtualizacao($DateAndTime);
+
         
         # Doc :: https://docs.phalconphp.com/en/3.3/db-models#create-update-records
-        if (!$this->noticia->save()) {
-            foreach ($this->noticia->getMessages() as $m) {
+        if (!$noticia->save($_POST)) {
+            foreach ($noticia->getMessages() as $m) {
                 $this->flashSession->error($m);
-                $this->dispatcher->forward([
+                return $this->dispatcher->forward([
                     'controller' => $this->router->getControllerName(),
-                    'action'     => 'noticias',
+                    'action'     => 'editar',
                 ]);
-                return;
             }
         }
 

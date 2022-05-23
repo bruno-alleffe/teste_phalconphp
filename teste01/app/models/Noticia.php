@@ -1,6 +1,6 @@
 <?php
 
-class Noticia extends \Phalcon\Mvc\Model
+class Noticia extends BaseModel
 {
 
     /**

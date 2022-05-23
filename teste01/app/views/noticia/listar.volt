@@ -44,7 +44,8 @@
                                                 <td class="titulo"><?php echo $noticia->titulo; ?></td>
                                                 <td class="text-center"><?php echo $noticia->texto; ?></td>
                                                 <td>
-                                                    <a href="{{ url(['for':'noticia.editar',"id":noticia.id]) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+                                                    <a href="noticias/editar/{{ noticia.id }}"><span class="glyphicon glyphicon-pencil"></span></a>
+                                                    {# <a href="{{ url(['for':'noticia.editar',"id":noticia.id]) }}"><span class="glyphicon glyphicon-pencil"></span></a> #}
                                                     <a href="{{ url(['for':'noticia.excluir',"id":noticia.id]) }}"><span class="glyphicon glyphicon-remove-sign"></span></a>
                                                 </td>
                                             </tr>

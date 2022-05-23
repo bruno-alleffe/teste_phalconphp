@@ -3,6 +3,7 @@ namespace App\Forms;
 
 use Phalcon\Forms\Form;
 use Phalcon\Forms\Element\Text;
+use Phalcon\Forms\Element\Hidden;
 use Phalcon\Forms\Element\TextArea;
 use Phalcon\Forms\Element\Password;
 use Phalcon\Forms\Element\Submit;
@@ -13,8 +14,16 @@ use Phalcon\Validation\Validator\Confirmation;
 
 class EditarForm extends Form
 {
-    public function initialize()
-    {
+    public function initialize($entity = null, $options = [])
+    {   
+
+        if (isset($options["edit"])) {
+            $id = new Hidden('id', [
+                "required" => true,
+            ]);
+
+            $this->add($id);
+        }
         /**
          * Titulo
          */

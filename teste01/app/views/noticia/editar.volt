@@ -25,15 +25,18 @@
                                         <div class="row">
                                             <div class="form-group col-sm-12">
                                                 <label for ="Titulo">Título <span class="error">(*)<span></label>
-                                                {{noticia.titulo}}
                                                 <?php echo $form->render('titulo'); ?>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="form-group col-sm-12">
                                                 <label for ="Texto">Texto</label>
-                                                {{noticia.texto}}
                                                 <?php echo $form->render('texto'); ?>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-sm-12">
+                                                 <?php echo $form->render('id'); ?>
                                             </div>
                                         </div>
                                     </div>{#/.panel-body#}
